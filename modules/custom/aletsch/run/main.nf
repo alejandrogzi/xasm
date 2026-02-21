@@ -4,8 +4,8 @@ process ALETSCH {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/aletsch:1.1.3--h9f5acd7_0' :
-        'biocontainers/aletsch:1.1.3--h9f5acd7_0' }"
+        'https://depot.galaxyproject.org/singularity/aletsch:1.1.3--hdbdd923_0' :
+        'biocontainers/aletsch:1.1.3--hdbdd923_0' }"
 
     input:
     tuple val(meta), path(bam), path(bai)
@@ -14,6 +14,7 @@ process ALETSCH {
     tuple val(meta), path("*.gtf")       , emit: gtf
     tuple val(meta), path("*profile")    , emit: profile
     tuple val(meta), env(LINE_COUNT)     , emit: assembled_transcripts
+    tuple val(meta), path(bam), path(bai), emit: bam
     path "versions.yml"                  , emit: versions
 
     when:
@@ -61,7 +62,7 @@ process ALETSCH {
     rm ${prefix}.gtf
     rm -rf ${prefix}_gtf/
 
-    if [ ${params.aletsch_keep_bam} == false ]; then
+    if [ ${params.aletsch_keep_bam} == false ] && [ $(params.star_make_coverage) == false ]; then
         # Resolve symlinks and delete actual files
         if [ -L "${bam}" ]; then
             realpath=\$(readlink -f "${bam}")
