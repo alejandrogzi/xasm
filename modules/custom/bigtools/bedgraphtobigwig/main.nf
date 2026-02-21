@@ -4,8 +4,8 @@ process BEDGRAPHTOBIGWIG {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bigtools:2.30.0--h7d7f7ad_1':
-        'biocontainers/bigtools:2.30.0--h7d7f7ad_1' }"
+        'https://depot.galaxyproject.org/singularity/bigtools:0.5.6--hc1c3326_1':
+        'biocontainers/bigtools:0.5.6--hc1c3326_1' }"
 
     input:
     tuple val(meta), path(bedgraph)

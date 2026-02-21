@@ -6,7 +6,7 @@
 
 include { PREPARE_GENOME_STAR } from '../star_index/main'
 include { PREPARE_DEACON_INDEX } from '../deacon_index/main'
-include { TWOBIT_TO_FA } from '../../modules/custom/twobit/main'
+include { TWOBIT_TO_FA } from '../../modules/custom/ucsc/twobittofa/main'
 include { GUNZIP as GUNZIP_FASTA } from '../../modules/custom/gunzip/main'
 include { CHROMSIZE } from '../../modules/custom/chromsize/main'
 

@@ -62,7 +62,7 @@ process ALETSCH {
     rm ${prefix}.gtf
     rm -rf ${prefix}_gtf/
 
-    if [ ${params.aletsch_keep_bam} == false ] && [ $(params.star_make_coverage) == false ]; then
+    if [ ${params.aletsch_keep_bam} == false ] && [ ${params.star_make_coverage} == false ]; then
         # Resolve symlinks and delete actual files
         if [ -L "${bam}" ]; then
             realpath=\$(readlink -f "${bam}")

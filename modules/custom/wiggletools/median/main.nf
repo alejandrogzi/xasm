@@ -27,7 +27,7 @@ process WIGGLETOOLS_MEDIAN {
         $args \\
         median \\
         $bigwigs \\
-        ${prefix}.wig
+        > ${prefix}.wig
 
     if [ ${params.wigtools_keep_bigwig} == false ]; then
         for bw in ${bigwigs}; do

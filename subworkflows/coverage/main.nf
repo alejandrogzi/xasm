@@ -5,8 +5,8 @@
 */
 
 include { BEDGRAPHTOBIGWIG } from '../../modules/custom/bigtools/bedgraphtobigwig/main'
-include { WIGGLETOOLS_MEDIAN AS WIGGLETOOLS } from '../../modules/custom/wiggletools/median/main'
-include { WIGTOBIGWIG } from '../../modules/custom/ucsc/wigtobigwig/main'
+include { WIGGLETOOLS_MEDIAN as WIGGLETOOLS } from '../../modules/custom/wiggletools/median/main'
+include { UCSC_WIGTOBIGWIG as WIGTOBIGWIG } from '../../modules/nf-core/ucsc/wigtobigwig/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,10 +31,10 @@ workflow COVERAGE {
             .map { files -> [ [id: 'merged_bigwigs'], files ] } // Add a generic meta map
 
         ch_wig = WIGGLETOOLS(ch_bigwig).wig
-        ch_joined_bw = WIGTOBIGWIG(ch_joined_wig, chrom_sizes).bigwig
+        ch_joined_bw = WIGTOBIGWIG(ch_wig, chrom_sizes).bigwig
 
         ch_versions = ch_versions.mix(BEDGRAPHTOBIGWIG.out.versions)
-        ch_versions = ch_versions.mix(WIGTOOLS.out.versions)
+        ch_versions = ch_versions.mix(WIGGLETOOLS.out.versions)
         ch_versions = ch_versions.mix(WIGTOBIGWIG.out.versions)
 
     emit:

@@ -98,6 +98,8 @@ workflow METASSEMBLE {
 
             ch_multiqc_report = MULTIQC.out.report
             ch_versions = ch_versions.mix(MULTIQC.out.versions)
+        } else {
+            ch_multiqc_report = Channel.empty()
         }
 
         if (params.star_make_coverage) {

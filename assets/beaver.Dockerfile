@@ -29,10 +29,8 @@ RUN aclocal \
     && ./configure --prefix=/usr/local \
     && make -j"$(nproc)" \
     && install -m 0755 src/beaver /usr/local/bin/beaver \
-    && beaver --version \
+    && beaver \
     && cd /opt \
     && rm -rf /opt/beaver-src
 
 WORKDIR /data
-ENTRYPOINT ["beaver"]
-CMD ["--help"]

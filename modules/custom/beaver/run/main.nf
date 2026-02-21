@@ -6,7 +6,7 @@ process BEAVER {
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         '' : 
-        'ghcr.io/alejandrogzi/beaver:0.0.1' }"
+        'ghcr.io/alejandrogzi/beaver:latest' }"
 
     input:
     path gtfs

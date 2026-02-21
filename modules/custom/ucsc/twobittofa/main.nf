@@ -4,8 +4,8 @@ process TWOBIT_TO_FA {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/ucsc-twobittofa:377--h9ee0642_0' :
-        'quay.io/biocontainers/ucsc-twobittofa:377--h9ee0642_0' }"
+        'https://depot.galaxyproject.org/singularity/ucsc-twobittofa:482--hdc0a859_0' :
+        'quay.io/biocontainers/ucsc-twobittofa:482--hdc0a859_0' }"
 
     input:
     tuple val(meta), path(twobit)
