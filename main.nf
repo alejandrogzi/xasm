@@ -29,6 +29,7 @@ workflow METASSEMBLE {
         ch_versions = Channel.empty()
         ch_linting_logs = Channel.empty()
         ch_multiqc_files = Channel.empty()
+        ch_multiqc_report = Channel.empty()
 
         ch_start_index = Channel.empty()
         ch_deacon_index = Channel.empty()
@@ -80,9 +81,9 @@ workflow METASSEMBLE {
             ch_indexes.star_gtf
         )
 
-        ch_multiqc_files = ch_multiqc_files.mix(ch_alignment.log_final.map { it[1] })
-
         if (!params.skip_multiqc) {
+            ch_multiqc_files = ch_multiqc_files.mix(ch_alignment.log_final.map { it[1] })
+
             ch_multiqc_config        = params.multiqc_config ? Channel.fromPath(params.multiqc_config) : Channel.empty()
             ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config) : Channel.empty()
             ch_multiqc_logo          = params.multiqc_logo   ? Channel.fromPath(params.multiqc_logo)   : Channel.empty()
@@ -98,9 +99,7 @@ workflow METASSEMBLE {
 
             ch_multiqc_report = MULTIQC.out.report
             ch_versions = ch_versions.mix(MULTIQC.out.versions)
-        } else {
-            ch_multiqc_report = Channel.empty()
-        }
+        } 
 
         if (params.star_make_coverage) {
           COVERAGE(
