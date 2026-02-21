@@ -108,41 +108,45 @@ workflow METASSEMBLE {
               ch_indexes.chrom_sizes
           )
         }
-        
-        ch_beaver = ASSEMBLY(
-            ch_alignment.bams
-        )
-
-        ch_fastqs_kept
-          .join(ch_alignment.bam_size, failOnMismatch: true)                        // (meta, reads, bam_size)
-          .join(ch_alignment.percent_mapped, failOnMismatch: true)                  // (+ pct)
-          .join(ch_processed_reads.deacon_discarded_seqs, failOnMismatch: true)     // (+ kept)
-          .join(ch_processed_reads.num_trimmed_reads, failOnMismatch: true)         // (+ num_trimmed_reads)
-          .join(ch_processed_reads.num_trimmed_reads_percent, failOnMismatch: true) // (+ num_trimmed_reads_percent)
-          .join(ch_beaver.counts, failOnMismatch: true)                             // (+ assembled_count)
-          .map {
-                meta,
-                reads,
-                bam_size_bytes,
-                pct,
-                kept,
-                reads_after_trim,
-                reads_after_trim_percent,
-                assembled_count
-                ->
-              def fastq_1 = file(reads[0].toUriString()).baseName
-              def fastq_2 = reads.size() > 1 ? file(reads[1].toUriString()).baseName : ''
-
-              def bam_size = (bam_size_bytes ?: 0) as long
-
-              "${meta.id},${fastq_1},${fastq_2},${reads_after_trim},${reads_after_trim_percent},${kept ?: ''},${pct ?: ''},${bam_size / 100000000},${assembled_count ?: ''}"
-          }
-          .collectFile(
-            name: 'samplesheet.csv',
-            storeDir: "${params.outdir}/samplesheets",
-            newLine: true,
+ 
+        if (!params.skip_assembly) {
+          ch_beaver = ASSEMBLY(
+              ch_alignment.bams
           )
-          .set { ch_samplesheet }
+
+          ch_fastqs_kept
+            .join(ch_alignment.bam_size, failOnMismatch: true)                        // (meta, reads, bam_size)
+            .join(ch_alignment.percent_mapped, failOnMismatch: true)                  // (+ pct)
+            .join(ch_processed_reads.deacon_discarded_seqs, failOnMismatch: true)     // (+ kept)
+            .join(ch_processed_reads.num_trimmed_reads, failOnMismatch: true)         // (+ num_trimmed_reads)
+            .join(ch_processed_reads.num_trimmed_reads_percent, failOnMismatch: true) // (+ num_trimmed_reads_percent)
+            .join(ch_beaver.counts, failOnMismatch: true)                             // (+ assembled_count)
+            .map {
+                  meta,
+                  reads,
+                  bam_size_bytes,
+                  pct,
+                  kept,
+                  reads_after_trim,
+                  reads_after_trim_percent,
+                  assembled_count
+                  ->
+                def fastq_1 = file(reads[0].toUriString()).baseName
+                def fastq_2 = reads.size() > 1 ? file(reads[1].toUriString()).baseName : ''
+
+                def bam_size = (bam_size_bytes ?: 0) as long
+
+                "${meta.id},${fastq_1},${fastq_2},${reads_after_trim},${reads_after_trim_percent},${kept ?: ''},${pct ?: ''},${bam_size / 100000000},${assembled_count ?: ''}"
+            }
+            .collectFile(
+              name: 'samplesheet.csv',
+              storeDir: "${params.outdir}/samplesheets",
+              newLine: true,
+            )
+            .set { ch_samplesheet }
+        } else {
+          ch_samplesheet = Channel.empty()
+        }
 
     emit:
         fastqs = ch_fastqs
