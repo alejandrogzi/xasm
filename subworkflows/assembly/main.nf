@@ -15,7 +15,7 @@ include { BEAVER } from '../../modules/custom/beaver/run/main'
 
 workflow ASSEMBLY {
     take:
-        ch_bams // channel: [ val(meta), path(bam) ]
+        ch_bams // channel: [ val(meta), path(bam), path(bai) ]
 
     main:
         ch_versions = Channel.empty()
