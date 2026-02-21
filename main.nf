@@ -12,6 +12,7 @@
 include { PREPARE_INDEXES } from './subworkflows/prepare_indexes/main'
 include { PREPROCESS_READS } from './subworkflows/preprocess_reads/main'
 include { STAR_ALIGNMENT } from './subworkflows/star_alignment/main'
+include { COVERAGE } from './subworkflows/coverage/main'
 include { ASSEMBLY } from './subworkflows/assembly/main'
 include { MULTIQC } from './modules/nf-core/multiqc/main'
 include { EMAIL_RESULTS } from './modules/custom/email/main'
@@ -99,6 +100,13 @@ workflow METASSEMBLE {
             ch_versions = ch_versions.mix(MULTIQC.out.versions)
         }
 
+        if (params.star_make_coverage) {
+          COVERAGE(
+              ch_alignment.bedgraph,
+              ch_indexes.chrom_sizes
+          )
+        }
+        
         ch_beaver = ASSEMBLY(
             ch_alignment.bams
         )
