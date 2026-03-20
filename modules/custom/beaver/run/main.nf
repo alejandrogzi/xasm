@@ -1,6 +1,6 @@
 process BEAVER {
     tag "meta_assembly"
-    label 'process_medium'
+    label 'process_long_high'
 
     conda "${moduleDir}/environment.yml"
     conda "${moduleDir}/environment.yml"
