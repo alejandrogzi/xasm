@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Alejandro Gonzales-Irribarren <alejandrxgzi@gmail.com>
+// Distributed under the terms of the Apache License, Version 2.0.
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT LOCAL MODULES/SUBWORKFLOWS
@@ -17,7 +20,7 @@ include { JOIN_JUNCTIONS } from '../../modules/custom/junctions/main'
 workflow STAR_ALIGNMENT {
     take:
         reads
-        gtf
+        gtf    // channel: [ val(meta), path(gtf) ]
 
     main:
         ch_versions = Channel.empty()
@@ -31,9 +34,9 @@ workflow STAR_ALIGNMENT {
             .set { ch_trimmed_split }
 
         gtf
-            .multiMap { g ->
-                first_pass: g
-                second_pass: g
+            .multiMap { meta, file ->
+                first_pass: file
+                second_pass: file
             }
             .set { gtf_split }
 
