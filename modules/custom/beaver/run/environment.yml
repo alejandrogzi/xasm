@@ -1,6 +1,6 @@
 name: beaver
 channels:
-  - file:///package
+  - file:///home/alejandro/Documents/projects/metassembly/modules/custom/beaver/run/package/
   - bioconda
   - conda-forge
 dependencies:

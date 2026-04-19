@@ -1,21 +1,21 @@
 // Copyright (c) 2025 Alejandro Gonzales-Irribarren <alejandrxgzi@gmail.com>
 // Distributed under the terms of the Apache License, Version 2.0.
 
-process DEACON_UNION {
+process GTF_REMOVE_DIRT {
     tag "$meta.id"
-    label 'process_single'
+    label 'process_low'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/deacon:0.13.2--h7ef3eeb_1':
-        'biocontainers/deacon:0.13.2--h7ef3eeb_1' }"
+        'https://depot.galaxyproject.org/singularity/gawk:5.3.0':
+        'biocontainers/gawk:5.3.0' }"
 
     input:
-    tuple val(meta), path(indexes)
+    tuple val(meta), path(gtf)
 
     output:
-    tuple val(meta), path("*.idx"), emit: index
-    path "versions.yml"           , emit: versions
+    tuple val(meta), path("*.clean.gtf")    , emit: gtf
+    path "versions.yml"                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -24,25 +24,29 @@ process DEACON_UNION {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    deacon \\
-        index \\
-        union \\
-        $indexes > ${prefix}.idx
+    awk 'NR==FNR {
+            if (\$4 >= \$5) { split(\$10, a, "\\""); genes[a[2]] = 1 }
+            next
+        }
+        {
+            split(\$10, a, "\\"")
+            if (!(a[2] in genes)) print
+        }' ${gtf} ${gtf} > ${prefix}.clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        deacon: \$(deacon --version | head -n1 | sed 's/deacon //g')
+        gawk: \$(gawk --version | sed 's/^.*gawk version //; s/ .*//')
     END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.idx
+    touch ${prefix}.clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        deacon: \$(deacon --version | head -n1 | sed 's/deacon //g')
+        gawk: \$(gawk --version | sed 's/^.*gawk version //; s/ .*//')
     END_VERSIONS
     """
-}
+}               
