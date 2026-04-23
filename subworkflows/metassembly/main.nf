@@ -18,6 +18,7 @@ include { GXF2BED } from '../../modules/custom/gxf2bed/main'
 include { ISOTOOLS_ORPHAN } from '../../modules/custom/isotools/orphan/main'
 include { ISOTOOLS_ORPHAN as ISOTOOLS_ORPHAN_DENOVO } from '../../modules/custom/isotools/orphan/main'
 include { ISOTOOLS_FUSION } from '../../modules/custom/isotools/fusion/main'
+include { GENEPRED_LINT } from '../../modules/custom/genepred/lint/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,6 +50,11 @@ workflow METASSEMBLE {
 
         ch_start_index = Channel.empty()
         ch_deacon_index = Channel.empty()
+
+        GENEPRED_LINT(
+          Channel.value(file(annotation, checkIfExists: true))
+          .map { it -> [ [ id: it.baseName ], it ] }
+        )
 
         ch_indexes = PREPARE_INDEXES(
             genome,
